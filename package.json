@@ -3,7 +3,7 @@
   "description": "A special app for Salma",
   "homepage": "https://ridaounana.github.io/Salma",
   "scripts": {
-    "predeploy": "flutter build web",
+    "predeploy": "flutter build web --base-href /Salma/",
     "deploy": "gh-pages -d build/web"
   },
   "devDependencies": {
