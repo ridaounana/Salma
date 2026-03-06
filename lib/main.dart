@@ -2,6 +2,7 @@ import 'dart:async'; // Required for the Timer
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:salma_love/game_page.dart';
+import 'package:salma_love/leaderboard_page.dart';
 
 void main() {
   runApp(const SalmaLoveApp());
@@ -56,10 +57,15 @@ class _HomePageState extends State<HomePage> {
         "You are beautiful inside and out.",
       ],
       'playGame': "Play a little game?",
+      'leaderboard': "Leaderboard",
       'gameAppBarTitle': 'Memory Lane',
       'winTitle': 'You Won!',
       'winContent': 'You found all the memories! 🎉',
       'playAgain': 'Play Again',
+      'enterName': 'Enter your name',
+      'yourName': 'Your Name',
+      'save': 'Save',
+      'noScores': 'No scores yet. Play a game to be the first!',
     },
     'fr': {
       'greeting': 'Bonjour, Salma ❤️',
@@ -80,10 +86,15 @@ class _HomePageState extends State<HomePage> {
         "Tu es belle à l'intérieur comme à l'extérieur.",
       ],
       'playGame': "Jouer à un petit jeu ?",
+      'leaderboard': "Classement",
       'gameAppBarTitle': 'Chemin de la mémoire',
       'winTitle': 'Tu as gagné !',
       'winContent': 'Tu as trouvé tous les souvenirs ! 🎉',
       'playAgain': 'Rejouer',
+      'enterName': 'Entrez votre nom',
+      'yourName': 'Votre nom',
+      'save': 'Enregistrer',
+      'noScores': 'Aucun score pour le moment. Jouez une partie pour être le premier !',
     },
     'ar': {
       'greeting': 'مرحباً سلمى ❤️',
@@ -104,10 +115,15 @@ class _HomePageState extends State<HomePage> {
         "أنتِ جميلة قلباً وقالباً.",
       ],
       'playGame': "تلعب لعبة صغيرة؟",
+      'leaderboard': "لوحة الصدارة",
       'gameAppBarTitle': 'ممر الذاكرة',
       'winTitle': 'لقد فزت!',
       'winContent': 'لقد وجدت كل الذكريات! 🎉',
       'playAgain': 'العب مرة أخرى',
+      'enterName': 'أدخل أسمك',
+      'yourName': 'اسمك',
+      'save': 'حفظ',
+      'noScores': 'لا توجد نتائج حتى الآن. العب لعبة لتكون الأول!',
     },
   };
 
@@ -341,12 +357,40 @@ class _HomePageState extends State<HomePage> {
                       elevation: 5,
                     ),
                   ),
+
+                  const SizedBox(height: 20),
+
+                  // --- LEADERBOARD BUTTON ---
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LeaderboardPage(
+                            selectedLanguage: _selectedLanguage,
+                            translations: _translations,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.leaderboard, color: Colors.white),
+                    label: Text(
+                      _translations[_selectedLanguage]!['leaderboard']!,
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE91E63).withAlpha(217), // 0.85 opacity
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      elevation: 5,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
-      ),
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:salma_love/leaderboard_model.dart';
 
 class GamePage extends StatefulWidget {
   final String selectedLanguage;
@@ -21,6 +22,7 @@ class GamePageState extends State<GamePage> {
   CardItem? _secondCard;
   int _matches = 0;
   bool _isProcessing = false;
+  final Stopwatch _stopwatch = Stopwatch();
 
   // Image paths for the game
   final List<String> _imagePaths = [
@@ -40,6 +42,8 @@ class GamePageState extends State<GamePage> {
 
   void _setupGame() {
     _matches = 0;
+    _stopwatch.reset();
+    _stopwatch.start();
     List<String> gameImages = [];
     gameImages.addAll(_imagePaths);
     gameImages.addAll(_imagePaths); // Duplicate for pairs
@@ -76,6 +80,7 @@ class GamePageState extends State<GamePage> {
       });
       _resetTurn();
       if (_matches == _imagePaths.length) {
+        _stopwatch.stop();
         _showWinDialog();
       }
     } else {
@@ -110,7 +115,41 @@ class GamePageState extends State<GamePage> {
               child: Text(widget.translations[widget.selectedLanguage]!['playAgain']!),
               onPressed: () {
                 Navigator.of(context).pop();
-                _setupGame();
+                _showNameInputDialog();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNameInputDialog() {
+    final TextEditingController nameController = TextEditingController();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(widget.translations[widget.selectedLanguage]!['enterName']!),
+          content: TextField(
+            controller: nameController,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: widget.translations[widget.selectedLanguage]!['yourName']!,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(widget.translations[widget.selectedLanguage]!['save']!),
+              onPressed: () {
+                final name = nameController.text;
+                if (name.isNotEmpty) {
+                  Leaderboard.addScore(Score(name: name, timeInSeconds: _stopwatch.elapsed.inSeconds));
+                  Navigator.of(context).pop();
+                  _setupGame();
+                }
               },
             ),
           ],
