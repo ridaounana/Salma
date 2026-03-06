@@ -1,0 +1,12 @@
+{
+  "name": "salma-love",
+  "description": "A special app for Salma",
+  "homepage": "https://ridaounana.github.io/Salma",
+  "scripts": {
+    "predeploy": "flutter build web",
+    "deploy": "gh-pages -d build/web"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
