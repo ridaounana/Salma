@@ -19,4 +19,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - img/
+    - img/unnamed.jpg
+    - "img/game (1).jpeg"
+    - "img/game (2).jpeg"
+    - "img/game (3).jpeg"
+    - "img/game (4).jpeg"
+    - "img/game (5).jpeg"
+    - "img/game (6).jpeg"
+    - "img/game (7).jpeg"

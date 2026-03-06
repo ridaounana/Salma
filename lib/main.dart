@@ -1,6 +1,7 @@
 import 'dart:async'; // Required for the Timer
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:salma_love/game_page.dart';
 
 void main() {
   runApp(const SalmaLoveApp());
@@ -53,7 +54,12 @@ class _HomePageState extends State<HomePage> {
         "You make every day better.",
         "My heart beats for you.",
         "You are beautiful inside and out.",
-      ]
+      ],
+      'playGame': "Play a little game?",
+      'gameAppBarTitle': 'Memory Lane',
+      'winTitle': 'You Won!',
+      'winContent': 'You found all the memories! 🎉',
+      'playAgain': 'Play Again',
     },
     'fr': {
       'greeting': 'Bonjour, Salma ❤️',
@@ -72,7 +78,12 @@ class _HomePageState extends State<HomePage> {
         "Tu rends chaque jour meilleur.",
         "Mon cœur bat pour toi.",
         "Tu es belle à l'intérieur comme à l'extérieur.",
-      ]
+      ],
+      'playGame': "Jouer à un petit jeu ?",
+      'gameAppBarTitle': 'Chemin de la mémoire',
+      'winTitle': 'Tu as gagné !',
+      'winContent': 'Tu as trouvé tous les souvenirs ! 🎉',
+      'playAgain': 'Rejouer',
     },
     'ar': {
       'greeting': 'مرحباً سلمى ❤️',
@@ -91,7 +102,12 @@ class _HomePageState extends State<HomePage> {
         "أنتِ تجعلين كل يوم أفضل.",
         "قلبي ينبض لكِ.",
         "أنتِ جميلة قلباً وقالباً.",
-      ]
+      ],
+      'playGame': "تلعب لعبة صغيرة؟",
+      'gameAppBarTitle': 'ممر الذاكرة',
+      'winTitle': 'لقد فزت!',
+      'winContent': 'لقد وجدت كل الذكريات! 🎉',
+      'playAgain': 'العب مرة أخرى',
     },
   };
 
@@ -170,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withAlpha(51), // 0.2 opacity
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: DropdownButtonHideUnderline(
@@ -215,7 +231,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     _translations[_selectedLanguage]!['greeting'],
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -252,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                     child: Card(
                       elevation: 8,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withAlpha(230), // 0.9 opacity
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
@@ -288,10 +304,38 @@ class _HomePageState extends State<HomePage> {
                     icon: const Icon(Icons.favorite, color: Colors.white),
                     label: Text(
                       _translations[_selectedLanguage]!['button'],
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE91E63),
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      elevation: 5,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // --- GAME BUTTON ---
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GamePage(
+                            selectedLanguage: _selectedLanguage,
+                            translations: _translations,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.games, color: Colors.white),
+                    label: Text(
+                      _translations[_selectedLanguage]!['playGame']!,
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE91E63).withAlpha(217), // 0.85 opacity
                       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                       elevation: 5,
@@ -313,7 +357,7 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.symmetric(horizontal: 5),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withAlpha(204), // 0.8 opacity
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
