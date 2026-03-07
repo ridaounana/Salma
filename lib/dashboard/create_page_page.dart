@@ -1,8 +1,12 @@
 // File: dashboard/create_page_page.dart
 import 'package:flutter/material.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:provider/provider.dart';
 import '../services/page_service.dart';
 import '../services/storage_service.dart';
+import '../services/coins_service.dart';
+import '../providers/coins_provider.dart';
+import 'coins_store_page.dart';
 
 class CreatePagePage extends StatefulWidget {
   const CreatePagePage({super.key});
@@ -96,10 +100,66 @@ class _CreatePagePageState extends State<CreatePagePage> {
       setState(() => _isLoading = true);
 
       try {
+        final coinsProvider = Provider.of<CoinsProvider>(context, listen: false);
+        final coinsService = CoinsService();
+
+        // Calculate cost
+        final cost = coinsService.calculatePageCost(
+          imageCount: _selectedImages.length,
+          messageCount: _messages.length,
+        );
+
+        // Check if user has enough coins
+        final hasEnoughCoins = await coinsProvider.hasEnoughCoins(cost);
+        if (!hasEnoughCoins) {
+          if (mounted) {
+            setState(() => _isLoading = false);
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Insufficient Coins'),
+                content: Text(
+                  'You need $cost coins to create this page. '
+                  'You currently have ${coinsProvider.coins} coins. '
+                  'Would you like to purchase more coins?',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CoinsStorePage(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Buy Coins',
+                      style: TextStyle(color: Color(0xFFE91E63)),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          return;
+        }
+
         // Upload images
         List<String> imageUrls = [];
         if (_selectedImages.isNotEmpty) {
           imageUrls = await _storageService.uploadPageImages(_selectedImages);
+        }
+
+        // Deduct coins
+        final deducted = await coinsProvider.deductCoins(cost);
+        if (!deducted) {
+          throw Exception('Failed to deduct coins');
         }
 
         // Create page
@@ -115,7 +175,10 @@ class _CreatePagePageState extends State<CreatePagePage> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Page created successfully!')),
+            SnackBar(
+              content: Text('Page created successfully! -$cost coins'),
+              backgroundColor: Colors.green,
+            ),
           );
           Navigator.pop(context);
         }
@@ -391,6 +454,98 @@ class _CreatePagePageState extends State<CreatePagePage> {
                       );
                     },
                   ),
+                const SizedBox(height: 20),
+
+                // Cost Preview
+                Consumer<CoinsProvider>(
+                  builder: (context, coinsProvider, _) {
+                    final cost = CoinsService().calculatePageCost(
+                      imageCount: _selectedImages.length,
+                      messageCount: _messages.length,
+                    );
+                    return Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Total Cost',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Page: ${CoinsService.coinsPerPage} coins',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                if (_selectedImages.isNotEmpty)
+                                  Text(
+                                    'Photos: ${_selectedImages.length * CoinsService.coinsPerImage} coins',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                if (_messages.isNotEmpty)
+                                  Text(
+                                    'Messages: ${_messages.length * CoinsService.coinsPerMessage} coins',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.monetization_on,
+                                      color: Color(0xFFE91E63),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      '$cost',
+                                      style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFE91E63),
+                                      ),
+                                    ),
+                                    const Text(
+                                      ' coins',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Balance: ${coinsProvider.coins}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: cost > coinsProvider.coins
+                                        ? Colors.red
+                                        : Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(height: 30),
 
                 // Create Button
@@ -456,3 +611,4 @@ class _CreatePagePageState extends State<CreatePagePage> {
     );
   }
 }
+

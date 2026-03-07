@@ -19,6 +19,7 @@ dependencies:
   provider: ^6.1.0
   url_launcher: ^6.2.0
   uuid: ^4.0.0
+  in_app_purchase: ^3.1.0
 
 dev_dependencies:
   flutter_test:

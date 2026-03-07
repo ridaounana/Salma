@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
 import '../services/page_service.dart';
+import '../providers/coins_provider.dart';
 import 'create_page_page.dart';
+import 'coins_store_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -22,6 +24,12 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     _loadPages();
+    _loadCoins();
+  }
+
+  void _loadCoins() {
+    final coinsProvider = Provider.of<CoinsProvider>(context, listen: false);
+    coinsProvider.loadCoins();
   }
 
   void _loadPages() {
@@ -75,6 +83,43 @@ class _DashboardPageState extends State<DashboardPage> {
         title: const Text('My Love Pages'),
         backgroundColor: const Color(0xFFE91E63),
         actions: [
+          // Coins Display
+          Consumer<CoinsProvider>(
+            builder: (context, coinsProvider, _) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.monetization_on,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${coinsProvider.coins}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          // Store Button
+          IconButton(
+            icon: const Icon(Icons.store),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CoinsStorePage(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {

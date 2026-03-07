@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
+import 'providers/coins_provider.dart';
 import 'auth/login_page.dart';
 import 'auth/signup_page.dart';
 import 'dashboard/dashboard_page.dart';
@@ -25,6 +26,7 @@ class LovePageSaaS extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CoinsProvider()),
       ],
       child: MaterialApp(
         title: 'Love Page SaaS',
